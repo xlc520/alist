@@ -1,8 +1,8 @@
 name: Close inactive
 
 on:
-  schedule:
-    - cron: "0 0 */7 * *"
+#  schedule:
+#    - cron: "0 0 */7 * *"
   workflow_dispatch:
 
 jobs:
