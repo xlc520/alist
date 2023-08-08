@@ -3,13 +3,15 @@ package _123
 import (
 	"errors"
 	"fmt"
-	"net/http"
-	"strconv"
-
 	"github.com/alist-org/alist/v3/drivers/base"
+	"github.com/alist-org/alist/v3/internal/op"
 	"github.com/alist-org/alist/v3/pkg/utils"
 	"github.com/go-resty/resty/v2"
 	jsoniter "github.com/json-iterator/go"
+	"math/rand"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 // do others that not defined in Driver interface
@@ -52,6 +54,7 @@ func (d *Pan123) login() error {
 			"remember": true,
 		}
 	}
+	loginuuid := RandomString(96)
 	res, err := base.RestyClient.R().
 		SetHeaders(map[string]string{
 			"origin":  "https://www.123pan.com",
@@ -60,9 +63,9 @@ func (d *Pan123) login() error {
 			//"platform":    "android",
 			"user-agent":   base.UserAgent,
 			"app-version":  "3",
-			"Content-Type": "application/json;charset=UTF-8",
+			"content-type": "application/json;charset=UTF-8",
 			"platform":     "web",
-			"LoginUuid":    d.LoginUuid,
+			"loginuuid":    loginuuid,
 		}).
 		SetBody(body).Post(SignIn)
 	if err != nil {
@@ -73,6 +76,8 @@ func (d *Pan123) login() error {
 	} else {
 		d.AccessToken = utils.Json.Get(res.Body(), "data", "token").ToString()
 	}
+	d.LoginUuid = loginuuid
+	op.MustSaveDriverStorage(d)
 	return err
 }
 
@@ -96,14 +101,13 @@ func (d *Pan123) request(url string, method string, callback base.ReqCallback, r
 		"origin":        "https://www.123pan.com",
 		"referer":       "https://www.123pan.com/",
 		"authorization": "Bearer " + d.AccessToken,
-		//"user-agent":    "Dart/2.19(dart:io)",
-		//"platform":      "android",
-		//"app-version":   "36",
-		"user-agent":   base.UserAgent,
-		"app-version":  "3",
-		"Content-Type": "application/json;charset=UTF-8",
-		"platform":     "web",
-		"LoginUuid":    d.LoginUuid,
+		"user-agent":    "Dart/2.19(dart:io)",
+		"platform":      "android",
+		"app-version":   "36",
+		//"user-agent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36",
+		//"app-version": "3",
+		//"platform":    "web",
+		"loginuuid": d.LoginUuid,
 	})
 	if callback != nil {
 		callback(req)
@@ -163,4 +167,14 @@ func (d *Pan123) getFiles(parentId string) ([]File, error) {
 		}
 	}
 	return res, nil
+}
+
+func RandomString(n int) string {
+	var letters = []byte("0123456789abcdefghijklmnopqrstuvwxyz")
+	result := make([]byte, n)
+	rand.NewSource(time.Now().UnixNano()) // 产生随机种子
+	for i := range result {
+		result[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(result)
 }
