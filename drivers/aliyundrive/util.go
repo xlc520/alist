@@ -28,14 +28,14 @@ func (d *AliDrive) createSession() error {
 	}
 	_, err, _ := d.request("https://api.aliyundrive.com/users/v1/users/device/create_session", http.MethodPost, func(req *resty.Request) {
 		req.SetBody(base.Json{
-			"deviceName":   "samsung",
-			"modelName":    "SM-G9810",
+			"deviceName":   "Redmi",
+			"modelName":    "Redmi K30 5G",
 			"nonce":        0,
 			"pubKey":       PublicKeyToHex(&state.privateKey.PublicKey),
 			"refreshToken": d.RefreshToken,
 		})
 	}, nil)
-	if err == nil{
+	if err == nil {
 		state.retry = 0
 	}
 	return err
@@ -98,7 +98,7 @@ func (d *AliDrive) request(url, method string, callback base.ReqCallback, resp i
 		"Referer":       "https://aliyundrive.com/",
 		"X-Signature":   state.signature,
 		"x-request-id":  uuid.NewString(),
-		"X-Canary":      "client=Android,app=adrive,version=v4.1.0",
+		"X-Canary":      "client=Android,app=adrive,version=v4.1.2",
 		"X-Device-Id":   state.deviceID,
 	})
 	if callback != nil {

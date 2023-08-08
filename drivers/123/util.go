@@ -18,7 +18,7 @@ const (
 	Api              = "https://www.123pan.com/api"
 	AApi             = "https://www.123pan.com/a/api"
 	BApi             = "https://www.123pan.com/b/api"
-	MainApi          = Api
+	MainApi          = AApi
 	SignIn           = MainApi + "/user/sign_in"
 	Logout           = MainApi + "/user/logout"
 	UserInfo         = MainApi + "/user/info"
@@ -54,12 +54,15 @@ func (d *Pan123) login() error {
 	}
 	res, err := base.RestyClient.R().
 		SetHeaders(map[string]string{
-			"origin":      "https://www.123pan.com",
-			"referer":     "https://www.123pan.com/",
-			"user-agent":  "Dart/2.19(dart:io)",
-			"platform":    "android",
-			"app-version": "36",
-			//"user-agent":  base.UserAgent,
+			"origin":  "https://www.123pan.com",
+			"referer": "https://www.123pan.com/",
+			//"user-agent":  "Dart/2.19(dart:io)",
+			//"platform":    "android",
+			"user-agent":   base.UserAgent,
+			"app-version":  "3",
+			"Content-Type": "application/json;charset=UTF-8",
+			"platform":     "web",
+			"LoginUuid":    d.LoginUuid,
 		}).
 		SetBody(body).Post(SignIn)
 	if err != nil {
@@ -93,10 +96,14 @@ func (d *Pan123) request(url string, method string, callback base.ReqCallback, r
 		"origin":        "https://www.123pan.com",
 		"referer":       "https://www.123pan.com/",
 		"authorization": "Bearer " + d.AccessToken,
-		"user-agent":    "Dart/2.19(dart:io)",
-		"platform":      "android",
-		"app-version":   "36",
-		//"user-agent":    base.UserAgent,
+		//"user-agent":    "Dart/2.19(dart:io)",
+		//"platform":      "android",
+		//"app-version":   "36",
+		"user-agent":   base.UserAgent,
+		"app-version":  "3",
+		"Content-Type": "application/json;charset=UTF-8",
+		"platform":     "web",
+		"LoginUuid":    d.LoginUuid,
 	})
 	if callback != nil {
 		callback(req)
