@@ -1,14 +1,14 @@
 name: auto_lang
 
 on:
-  push:
-    branches:
-      - 'main'
-    paths:
-      - 'drivers/**'
-      - 'internal/bootstrap/data/setting.go'
-      - 'internal/conf/const.go'
-      - 'cmd/lang.go'
+#  push:
+#    branches:
+#      - 'main'
+#    paths:
+#      - 'drivers/**'
+#      - 'internal/bootstrap/data/setting.go'
+#      - 'internal/conf/const.go'
+#      - 'cmd/lang.go'
   workflow_dispatch:
 
 jobs:
