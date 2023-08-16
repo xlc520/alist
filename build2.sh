@@ -5,8 +5,8 @@ gitAuthor="Xhofe <i@nn.ci>"
 gitCommit=$(git log --pretty=format:"%h" -1)
 nowDate= "$(date +'%Y.%m.%d.%H%M%S')"
 if [ "$1" = "dev" ]; then
-  version=nowDate
-  webVersion=nowDate
+  version=$nowDate
+  webVersion=$nowDate
 else
   version=$(git describe --abbrev=0 --tags)
   webVersion=$(wget -qO- -t1 -T2 "https://api.github.com/repos/alist-org/alist-web/releases/latest" | grep "tag_name" | head -n 1 | awk -F ":" '{print $2}' | sed 's/\"//g;s/,//g;s/ //g')
